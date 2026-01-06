@@ -678,3 +678,10 @@ button:focus,
         font-size: 1.6rem;
     }
 }
+
+/* Use system font for welcome and installation instruction texts (avoid 1s.ttf) */
+#welcomeText,
+.info-text {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+    font-weight: 400;
+}
