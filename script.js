@@ -3,7 +3,8 @@ function init() {
     function createLines() {
         const linesContainer = document.getElementById('lines');
         if (!linesContainer) return;
-        const lineCount = 5; // fewer snowflakes per batch
+        const isSmall = window.innerWidth < 700 || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const lineCount = isSmall ? 2 : 5; // fewer particles on small devices
 
         for (let i = 0; i < lineCount; i++) {
             const line = document.createElement('div');
@@ -14,12 +15,12 @@ function init() {
             line.style.width = size + 'px';
             line.style.height = size + 'px';
 
-            line.style.animationDelay = (Math.random() * 5).toFixed(2) + 's';
-            const duration = Math.random() * 6 + 6; // 6-12s
+            line.style.animationDelay = (Math.random() * (isSmall ? 2 : 5)).toFixed(2) + 's';
+            const duration = Math.random() * (isSmall ? 4 : 6) + (isSmall ? 6 : 6); // shorter on small
             line.style.animationDuration = duration.toFixed(2) + 's';
 
             line.style.opacity = (Math.random() * 0.5 + 0.4).toFixed(2);
-            if (Math.random() > 0.75) line.style.filter = 'blur(0.6px)';
+            if (!isSmall && Math.random() > 0.75) line.style.filter = 'blur(0.6px)';
 
             linesContainer.appendChild(line);
 
@@ -180,29 +181,7 @@ function init() {
     if (modalClose) modalClose.addEventListener('click', closeDownloadModal);
     if (downloadModal) downloadModal.addEventListener('click', function(e){ if (e.target === this) closeDownloadModal(); });
 
-    function startDownload(button, fileName){
-        button.classList.add('loading');
-        const btnText = button.querySelector('.btn-text');
-        const loadingBars = button.querySelector('.loading-bars');
-        const originalText = btnText ? btnText.textContent : '';
-        if (btnText) btnText.textContent = 'DOWNLOADING...';
-        if (loadingBars) loadingBars.classList.add('active');
-
-        setTimeout(()=>{
-            const link = document.createElement('a');
-            link.href = encodeURI(fileName);
-            link.download = fileName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            setTimeout(()=>{
-                button.classList.remove('loading');
-                if (btnText) btnText.textContent = originalText;
-                if (loadingBars) loadingBars.classList.remove('active');
-            }, 800);
-        }, 800);
-    }
+    // startDownload removed (unused) — downloads handled via modal direct links
 
     // Button hover/touch animations (kept simple)
     const buttons = document.querySelectorAll('button, .social-btn, .contact-btn');
@@ -213,16 +192,15 @@ function init() {
         button.addEventListener('touchend', function(){ if (!this.classList.contains('loading')) this.style.transform = ''; });
     });
 
-    // Background subtle movement
+    // Reduce background animation on small devices
     function animateBackground(){
         const bg = document.querySelector('.animated-bg');
         if (!bg) return;
+        if (window.innerWidth < 700 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         let position = 0;
         setInterval(()=>{ position = (position + 1) % 10000; bg.style.backgroundPosition = `${position}px ${position}px`; }, 60);
     }
     animateBackground();
-
-    // Simple SPA navigation
     function showSection(id){
         document.querySelectorAll('.section').forEach(s=> s.classList.remove('active'));
         const el = document.getElementById(id);
@@ -234,16 +212,29 @@ function init() {
         btn.addEventListener('click', ()=> showSection(btn.dataset.target));
     });
 
-    // Theme toggle (dark / red)
+    // Theme toggle (dark / light)
     const themeToggle = document.getElementById('themeToggle');
     function applyTheme(name){
-        if (name === 'red') document.body.classList.add('alt-theme'); else document.body.classList.remove('alt-theme');
+        if (name === 'light') document.body.classList.add('light-theme'); else document.body.classList.remove('light-theme');
         localStorage.setItem('preferredTheme', name);
-        if (themeToggle) themeToggle.textContent = name === 'red' ? '☀️' : '🌑';
+        if (themeToggle) themeToggle.textContent = name === 'light' ? '🌤️' : '🌑';
+        document.querySelectorAll('.theme-option').forEach(b=> b.classList.toggle('active', b.dataset.theme===name));
     }
     const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
     applyTheme(savedTheme);
-    if (themeToggle) themeToggle.addEventListener('click', ()=> applyTheme(document.body.classList.contains('alt-theme') ? 'dark' : 'red'));
+    if (themeToggle) themeToggle.addEventListener('click', ()=> applyTheme(document.body.classList.contains('light-theme') ? 'dark' : 'light'));
+
+    // Theme options (settings page)
+    document.querySelectorAll('.theme-option').forEach(btn=> btn.addEventListener('click', ()=> applyTheme(btn.dataset.theme)));
+
+    // Language options (settings page)
+    document.querySelectorAll('.lang-option').forEach(btn=> btn.addEventListener('click', ()=>{
+        applyTranslation(btn.dataset.lang);
+        document.querySelectorAll('.lang-option').forEach(b=> b.classList.toggle('active', b.dataset.lang===btn.dataset.lang));
+    }));
+
+    // mark language buttons active on load
+    document.querySelectorAll('.lang-option').forEach(b=> b.classList.toggle('active', b.dataset.lang===preferredLang));
 
     // Initialize show based on hash or default
     const initial = location.hash ? location.hash.replace('#','') : 'home';

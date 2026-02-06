@@ -23,7 +23,7 @@
                 <nav class="main-nav">
                     <button class="nav-link active" data-target="home">Home</button>
                     <button class="nav-link" data-target="mods">Mods</button>
-                    <button class="nav-link" data-target="download">Download</button>
+                    <button class="nav-link" data-target="settings">Settings</button>
                 </nav>
             </div>
         </header>
@@ -90,24 +90,26 @@
                 </div>
             </section>
 
-            <section id="download" class="section">
-                <div class="download-section">
-                    <h2 class="section-title">Скачать</h2>
-                    <p class="section-subtitle">Выберите файл для загрузки</p>
-                    <div class="download-list">
-                        <div class="download-item">
-                            <div class="download-item-info">
-                                <strong>Script.zip</strong>
-                                <span>Обычная сборка</span>
+            <section id="settings" class="section">
+                <div class="settings-section">
+                    <h2 class="section-title">Settings</h2>
+                    <p class="section-subtitle">Настройки темы и языка</p>
+
+                    <div class="settings-grid">
+                        <div class="settings-card">
+                            <h3>Theme</h3>
+                            <div class="theme-options">
+                                <button class="theme-option" data-theme="dark">Dark (чёрная)</button>
+                                <button class="theme-option" data-theme="light">Light (белая)</button>
                             </div>
-                            <button class="download-btn" data-file="Script.zip">Скачать</button>
                         </div>
-                        <div class="download-item">
-                            <div class="download-item-info">
-                                <strong>Hypper Sandbox Mod.zip</strong>
-                                <span>Полный мод-пак</span>
+
+                        <div class="settings-card">
+                            <h3>Language</h3>
+                            <div class="lang-options">
+                                <button class="lang-option" data-lang="ru">Русский</button>
+                                <button class="lang-option" data-lang="en">English</button>
                             </div>
-                            <button class="download-btn" data-file="Hypper Sandbox Mod.zip">Скачать</button>
                         </div>
                     </div>
                 </div>
